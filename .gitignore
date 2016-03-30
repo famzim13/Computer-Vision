@@ -2,7 +2,7 @@
 # Created by https://www.gitignore.io/api/c++,cmake
 
 ### CMake Folder ###
-/segmentation
+segmentation/
 
 ### C++ ###
 # Compiled Object files
