@@ -1,4 +1,4 @@
-cd segmentation
 mkdir segmentation
+cd segmentation
 cmake ..
 make

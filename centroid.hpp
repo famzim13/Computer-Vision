@@ -3,6 +3,7 @@
 #define INCLUDED_CENTROID
 
 #include <cmath>
+#include <iostream>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <vector>
@@ -42,8 +43,11 @@ class Centroid
     float distance( cv::Vec2b coordinates, cv::Vec3b rgb );
       // Calculates the magnitude of color and distance between centroid and pixel.
 
+    void update( std::vector<cv::Vec3b> pixels );
+      // Updates the centroids rgb value.
+
     void update( std::vector<cv::Vec2b> locations, std::vector<cv::Vec3b> pixels );
-      // Updates the centroid based on average.
+      // Updates the centroids rgb and coordinate values.
 
 };
 

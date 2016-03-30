@@ -46,18 +46,17 @@ cv::Mat KMeans::perform()
 
   do
   {
-    d_old_clustered = d_clustered;
-    updateCentroids();
+    d_old_clustered = d_clustered.clone();
+    cv::MatIterator_<uchar> cluster_it = d_clustered.begin<uchar>();
+    cv::MatConstIterator_<cv::Vec3b> image_it = d_image.begin<cv::Vec3b>();
 
-    for( int x=0; x<d_image.rows; x++ )
+    for( ; cluster_it != d_clustered.end<uchar>(); cluster_it++, image_it++ )
     {
-      for( int y=0; y<d_image.cols; y++ )
-      {
-        d_clustered.at<uchar>( x, y ) = nearestCentroid( d_image.at<cv::Vec3b>( x, y ) );
-      }
+      *cluster_it = nearestCentroid( *image_it );
     }
-  }
-  while( !converged( d_old_clustered ) );
+
+    updateCentroids();
+  } while( !converged( d_old_clustered ) );
 
   return kmeansImage();
 }
@@ -65,19 +64,20 @@ cv::Mat KMeans::perform()
 // MEMBER FUNCTIONS
 bool KMeans::converged( cv::Mat clustered )
 {
-  return std::equal( d_clustered.begin<uchar>(), d_clustered.end<uchar>(), clustered.begin<uchar>() );
+  return std::equal( d_clustered.begin<uchar>(),
+                    d_clustered.end<uchar>(),
+                    clustered.begin<uchar>() );
 }
 
 cv::Mat KMeans::kmeansImage()
 {
   cv::Mat image = cv::Mat( d_image.rows, d_image.cols, d_image.type() );
+  cv::MatIterator_<cv::Vec3b> image_it = image.begin<cv::Vec3b>();
+  cv::MatConstIterator_<uchar> cluster_it = d_clustered.begin<uchar>();
 
-  for( int x=0; x<image.rows; x++ )
+  for( ; cluster_it != d_clustered.end<uchar>(); image_it++, cluster_it++ )
   {
-    for( int y=0; y<image.cols; y++ )
-    {
-      image.at<cv::Vec3b>( x, y ) = d_centroids[d_clustered.at<uchar>( x, y )].getRGB();
-    }
+    *image_it = d_centroids[*cluster_it].getRGB();
   }
 
   return image;
@@ -104,42 +104,53 @@ int KMeans::nearestCentroid( cv::Vec3b pixel )
 
 void KMeans::setCentroids()
 {
+  bool add = true;
   int selected = 0;
-  cv::Mat selectedMatrix = cv::Mat::zeros( d_image.rows, d_image.cols, CV_8U );
-
   srand( time( NULL ) );
 
   while( selected != d_num_clusters )
   {
     int x = rand() % d_image.rows;
     int y = rand() % d_image.cols;
+    cv::Vec3b pixel = d_image.at<cv::Vec3b>( x, y );
 
-    if( selectedMatrix.at<uchar>( x, y ) )
+    for( int i=0; i<d_centroids.size(); i++ )
     {
-      continue;
+      if( d_centroids[i].getRGB() == pixel )
+      {
+        add = false;
+      }
     }
 
-    d_centroids.push_back( centroid::Centroid( cv::Vec2b( x, y ), d_image.at<cv::Vec3b>( x, y ) ) );
-    selectedMatrix.at<uchar>( x, y ) = 1;
-    selected++;
+    if( add )
+    {
+      d_centroids.push_back( centroid::Centroid( cv::Vec2b( x, y ), pixel ) );
+      selected++;
+    }
+
+    add = true;
   }
 }
 
 void KMeans::updateCentroids()
 {
+  std::vector<cv::Vec3b> pixels;
+  std::vector<centroid::Centroid> centroids;
+
   for( int i=0; i<d_num_clusters; i++ )
   {
-    std::vector<cv::Vec3b> pixels;
-    for( int x=0; x<d_image.rows; x++ )
+    cv::MatConstIterator_<uchar> cluster_it = d_clustered.begin<uchar>();
+    cv::MatConstIterator_<cv::Vec3b> image_it = d_image.begin<cv::Vec3b>();
+    for( ; cluster_it != d_clustered.end<uchar>(); cluster_it++, image_it++ )
     {
-      for( int y=0; y<d_image.cols; y++ )
+      if( *cluster_it == i )
       {
-        if( d_clustered.at<uchar>( x, y ) == i )
-        {
-          pixels.push_back( d_image.at<cv::Vec3b>( x, y ) );
-        }
+        pixels.push_back( *image_it );
       }
     }
+
+    d_centroids[i].update( pixels );
+    pixels.clear();
   }
 }
 

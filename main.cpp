@@ -11,7 +11,7 @@
 
 int main( int argc, char** argv )
 {
-  if( argc != 7 )
+  if( argc != 6 )
   {
     std::cout << "Not enough arguments\n";
     return -1;
@@ -19,10 +19,9 @@ int main( int argc, char** argv )
 
   int num_clusters = atoi( argv[1] );
   cv::Mat kmeans_image = cv::imread( argv[2] );
-  int super_x = atoi( argv[3] );
-  int super_y = atoi( argv[4] );
-  cv::Mat slic_image = cv::imread( argv[5] );
-  float sigma = atof( argv[6] );
+  int super_pixel = atoi( argv[3] );
+  cv::Mat slic_image = cv::imread( argv[4] );
+  float sigma = atof( argv[5] );
 
   scv::kmeans::KMeans clustered = scv::kmeans::KMeans( kmeans_image, num_clusters );
   std::string filename = std::to_string( num_clusters ).append( "_" ).append( argv[2] );
