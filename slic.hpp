@@ -6,6 +6,7 @@
 #include "filter.hpp"
 
 #include <cmath>
+#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
@@ -34,6 +35,9 @@ class SLIC
     int d_size;
       // Dimensional size of super pixel.
 
+    int d_num_clusters;
+      // Number of super pixels.
+
     std::vector<centroid::Centroid> d_centroids;
       // List of centroids for the super pixels.
 
@@ -47,14 +51,20 @@ class SLIC
     int boundsCheck( int bounds, int position );
       // Bounds the pixel coordinates.
 
-    bool converged( cv::Mat super_pixels );
+    bool boundary( int x, int y );
+      // Returns whether or not a pixel is a boundary.
+
+    bool converged();
       // Checks if SLIC has converged.
 
     void getSmallestMagnitude( int x_start, int x_end, int y_start, int y_end );
       // Get the smallest 3x3 area in the superpixel.
 
-    int nearestCentroid( cv::Vec2b coordinates, cv::Vec3b pixel );
+    int nearestCentroid( cv::Vec<int, 2> coordinates, cv::Vec3b pixel );
       // Calculates nearest centroid for the pixel.
+
+    void setCentroids();
+      // Build the array of centroids.
 
     cv::Mat slicImage();
       // Returns image that SLIC has computed.

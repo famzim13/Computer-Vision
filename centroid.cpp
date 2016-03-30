@@ -8,7 +8,7 @@ namespace centroid
 {
 
 // CONSTRUCTORS
-Centroid::Centroid( cv::Vec2b coordinates, cv::Vec3b rgb )
+Centroid::Centroid( cv::Vec<int, 2> coordinates, cv::Vec3b rgb )
 {
   d_coordinates = coordinates;
   d_rgb = rgb;
@@ -21,12 +21,23 @@ Centroid::~Centroid()
 }
 
 // ACCESSORS
+cv::Vec<int, 2> Centroid::getCoordinates()
+{
+  return d_coordinates;
+}
+
 cv::Vec3b Centroid::getRGB()
 {
   return d_rgb;
 }
 
 // FREE OPERATORS
+float Centroid::distance( cv::Vec<int, 2> coordinates )
+{
+  return sqrt( pow( d_coordinates(0) - coordinates(0), 2 )
+             + pow( d_coordinates(1) - coordinates(1), 2 ) );
+}
+
 float Centroid::distance( cv::Vec3b rgb )
 {
   return sqrt( pow( d_rgb(0) - rgb(0), 2 )
@@ -34,7 +45,7 @@ float Centroid::distance( cv::Vec3b rgb )
              + pow( d_rgb(2) - rgb(2), 2 ) );
 }
 
-float Centroid::distance( cv::Vec2b coordinates, cv::Vec3b rgb )
+float Centroid::distance( cv::Vec<int, 2> coordinates, cv::Vec3b rgb )
 {
   return sqrt( pow( d_rgb(0) - rgb(0), 2 )
                 + pow( d_rgb(1) - rgb(1), 2 )
@@ -58,7 +69,7 @@ void Centroid::update( std::vector<cv::Vec3b> pixels )
   d_rgb = rgb / size;
 }
 
-void Centroid::update( std::vector<cv::Vec2b> locations, std::vector<cv::Vec3b> pixels )
+void Centroid::update( std::vector<cv::Vec<int, 2>> locations, std::vector<cv::Vec3b> pixels )
 {
   cv::Vec<int, 2> coordinates;
   cv::Vec<int, 3> rgb;

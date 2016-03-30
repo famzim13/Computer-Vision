@@ -3,7 +3,6 @@
 #define INCLUDED_CENTROID
 
 #include <cmath>
-#include <iostream>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <vector>
@@ -25,7 +24,7 @@ class Centroid
 
   public:
     //CONSTRUCTORS
-    Centroid( cv::Vec2b coordinates, cv::Vec3b rgb );
+    Centroid( cv::Vec<int, 2> coordinates, cv::Vec3b rgb );
       // Consturctor with coordinates of the centroid and color.
 
     // DESTRUCTORS
@@ -33,20 +32,26 @@ class Centroid
       // Default destructor.
 
     // ACCESSORS
+    cv::Vec<int, 2> getCoordinates();
+      // Returns the x,y coordinate of the centroid.
+
     cv::Vec3b getRGB();
       // Returns the rgb value of the centroid.
 
     // FREE OPERATORS
+    float distance( cv::Vec<int, 2> coordinates );
+      // Calculates cartesian distance between pixel and centroid.
+
     float distance( cv::Vec3b rgb );
       // Calculates the color similarity between centroid and pixel.
 
-    float distance( cv::Vec2b coordinates, cv::Vec3b rgb );
+    float distance( cv::Vec<int, 2> coordinates, cv::Vec3b rgb );
       // Calculates the magnitude of color and distance between centroid and pixel.
 
     void update( std::vector<cv::Vec3b> pixels );
       // Updates the centroids rgb value.
 
-    void update( std::vector<cv::Vec2b> locations, std::vector<cv::Vec3b> pixels );
+    void update( std::vector<cv::Vec<int, 2>> locations, std::vector<cv::Vec3b> pixels );
       // Updates the centroids rgb and coordinate values.
 
 };
