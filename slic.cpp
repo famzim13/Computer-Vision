@@ -88,11 +88,11 @@ cv::Mat SLIC::perform()
       for( int y=0; y<d_image.cols; y++ )
       {
         nearest = nearestCentroid( cv::Vec<int, 2>( x, y ), d_image.at<cv::Vec3b>( x, y ) );
-        old_nearest = d_pixels.at<uchar>( x, y );
+        old_nearest = d_pixels.at<ushort>( x, y );
         if( nearest != old_nearest )
         {
           converged = false;
-          d_pixels.at<uchar>( x, y ) = nearest;
+          d_pixels.at<ushort>( x, y ) = nearest;
           key = mapCoordinates( x, y );
           cv::Vec<int, 2> coord = cv::Vec<int, 2>( x, y );
           cv::Vec3b pixel = d_image.at<cv::Vec3b>( x, y );
@@ -113,14 +113,14 @@ cv::Mat SLIC::perform()
 // MEMBER FUNCTIONS
 void SLIC::assignPixels()
 {
-  d_pixels = cv::Mat( d_image.rows, d_image.cols, CV_8U );
+  d_pixels = cv::Mat( d_image.rows, d_image.cols, CV_16U );
   int per_row = d_image.rows / d_size;
 
   for( int x=0; x<d_image.rows; x++ )
   {
     for( int y=0; y<d_image.cols; y++ )
     {
-      d_pixels.at<uchar>( x, y ) = ( y / d_size ) + ( per_row * ( x / d_size ) );
+      d_pixels.at<ushort>( x, y ) = ( y / d_size ) + ( per_row * ( x / d_size ) );
     }
   }
 }
@@ -132,10 +132,10 @@ int SLIC::boundsCheck( int bounds, int position )
 
 bool SLIC::boundary( int x, int y )
 {
-  int surrounding = ( d_pixels.at<uchar>( boundsCheck( d_image.rows, x+1 ), y )
-    + d_pixels.at<uchar>( boundsCheck( d_image.rows, x-1 ), y )
-    + d_pixels.at<uchar>( x, boundsCheck( d_image.cols, y-1 ) )
-    + d_pixels.at<uchar>( x, boundsCheck( d_image.cols, y+1 ) ) ) / 4;
+  int surrounding = ( d_pixels.at<ushort>( boundsCheck( d_image.rows, x+1 ), y )
+    + d_pixels.at<ushort>( boundsCheck( d_image.rows, x-1 ), y )
+    + d_pixels.at<ushort>( x, boundsCheck( d_image.cols, y-1 ) )
+    + d_pixels.at<ushort>( x, boundsCheck( d_image.cols, y+1 ) ) ) / 4;
 
   return surrounding != d_pixels.at<uchar>( x, y );
 }
@@ -237,7 +237,7 @@ void SLIC::setMap()
   {
     for( int y=0; y<d_image.cols; y++ )
     {
-      int centroid = d_pixels.at<uchar>( x, y );
+      int centroid = d_pixels.at<ushort>( x, y );
       int key = mapCoordinates( x, y );
       cv::Vec<int, 2> coord = cv::Vec<int, 2>( x, y );
       cv::Vec3b pixel = d_image.at<cv::Vec3b>( x, y );
