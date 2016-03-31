@@ -14,7 +14,7 @@ namespace kmeans
 KMeans::KMeans( cv::Mat image )
 {
   d_image = image;
-  d_clustered = cv::Mat( image.rows, image.cols, CV_8U );
+  d_clustered = cv::Mat( image.rows, image.cols, CV_16U );
   d_num_clusters = 10;
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
@@ -26,7 +26,7 @@ KMeans::KMeans( cv::Mat image )
 KMeans::KMeans( cv::Mat image, int num_clusters )
 {
   d_image = image;
-  d_clustered = cv::Mat( image.rows, image.cols, CV_8U );
+  d_clustered = cv::Mat( image.rows, image.cols, CV_16U );
   d_num_clusters = num_clusters;
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
@@ -81,11 +81,11 @@ cv::Mat KMeans::perform()
       for( int y=0; y<d_image.cols; y++ )
       {
         nearest = nearestCentroid( d_image.at<cv::Vec3b>( x, y ) );
-        old_nearest = d_clustered.at<uchar>( x, y );
+        old_nearest = d_clustered.at<ushort>( x, y );
         if( nearest != old_nearest )
         {
           converged = false;
-          d_clustered.at<uchar>( x, y ) = nearest;
+          d_clustered.at<ushort>( x, y ) = nearest;
           key = mapCoordinates( x, y );
           cv::Vec<int, 2> coord = cv::Vec<int, 2>( x, y );
           cv::Vec3b pixel = d_image.at<cv::Vec3b>( x, y );
