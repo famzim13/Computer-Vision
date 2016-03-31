@@ -30,6 +30,7 @@ class SLIC
       // Image of super pixel assignments.
 
     float d_dist_factor;
+      // Modifier for distance formula.
 
     int d_size;
       // Dimensional size of super pixel.

@@ -14,7 +14,7 @@ SLIC::SLIC( cv::Mat image )
   d_filter = filter::Filter();
   d_dist_factor = 1.0;
   d_size = 50;
-  d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_num_clusters = ceil( (double)image.rows / d_size ) * ceil( (double)image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
@@ -25,7 +25,7 @@ SLIC::SLIC( cv::Mat image, float sigma )
   d_filter = filter::Filter( sigma );
   d_dist_factor = 1.0;
   d_size = 50;
-  d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_num_clusters = ceil( (double)image.rows / d_size ) * ceil( (double)image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
@@ -36,7 +36,7 @@ SLIC::SLIC( cv::Mat image, int size )
   d_filter = filter::Filter();
   d_dist_factor = 1.0;
   d_size = size;
-  d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_num_clusters = ceil( (double)image.rows / d_size ) * ceil( (double)image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
@@ -47,7 +47,7 @@ SLIC::SLIC( cv::Mat image, int size, float dist_factor )
   d_filter = filter::Filter();
   d_dist_factor = dist_factor;
   d_size = size;
-  d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_num_clusters = ceil( (double)image.rows / d_size ) * ceil( (double)image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
