@@ -14,6 +14,8 @@ SLIC::SLIC( cv::Mat image )
   d_filter = filter::Filter();
   d_size = 50;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
+  d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
 
 SLIC::SLIC( cv::Mat image, float sigma )
@@ -22,6 +24,8 @@ SLIC::SLIC( cv::Mat image, float sigma )
   d_filter = filter::Filter( sigma );
   d_size = 50;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
+  d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
 
 SLIC::SLIC( cv::Mat image, int size )
@@ -30,6 +34,8 @@ SLIC::SLIC( cv::Mat image, int size )
   d_filter = filter::Filter();
   d_size = size;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
+  d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
 
 SLIC::SLIC( cv::Mat image, int size, float sigma )
@@ -38,6 +44,8 @@ SLIC::SLIC( cv::Mat image, int size, float sigma )
   d_filter = filter::Filter( sigma );
   d_size = size;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
+  d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
+  d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
 
 // DESTRUCTORS
@@ -65,46 +73,54 @@ void SLIC::setSigma( float sigma )
 // FREE OPERATORS
 cv::Mat SLIC::perform()
 {
-  assignSuperPixels();
+  bool converged;
+  int nearest, old_nearest, key;
+  assignPixels();
   setCentroids();
-  int count = 0;
+  setMap();
 
   do
   {
-    std::cout << count << '\n';
-    count++;
-
-    cv::Vec3b rgb;
-    int nearest;
-    d_old_super_pixels = d_super_pixels.clone();
+    converged = true;
 
     for( int x=0; x<d_image.rows; x++ )
     {
       for( int y=0; y<d_image.cols; y++ )
       {
-        rgb = d_image.at<cv::Vec3b>( x, y );
-        nearest = nearestCentroid( cv::Vec<int, 2>( x, y ), rgb );
-        d_super_pixels.at<uchar>( x, y ) = nearest;
+        nearest = nearestCentroid( cv::Vec<int, 2>( x, y ), d_image.at<cv::Vec3b>( x, y ) );
+        old_nearest = d_pixels.at<uchar>( x, y );
+        if( nearest != old_nearest )
+        {
+          converged = false;
+          d_pixels.at<uchar>( x, y ) = nearest;
+          key = mapCoordinates( x, y );
+          cv::Vec<int, 2> coord = cv::Vec<int, 2>( x, y );
+          cv::Vec3b pixel = d_image.at<cv::Vec3b>( x, y );
+          d_coords[old_nearest].erase( key );
+          d_coords[nearest].insert( std::pair<int, cv::Vec<int, 2>>( key, coord ) );
+          d_rgb[old_nearest].erase( key );
+          d_rgb[nearest].insert( std::pair<int, cv::Vec3b>( key, pixel ) );
+        }
       }
     }
-    cv::imwrite( std::to_string(count)+"_slic.png", slicImage() );
-    updateSuperPixels();
-  } while( !converged() );
+
+    updatePixels();
+  } while( !converged );
 
   return slicImage();
 }
 
 // MEMBER FUNCTIONS
-void SLIC::assignSuperPixels()
+void SLIC::assignPixels()
 {
-  d_super_pixels = cv::Mat( d_image.rows, d_image.cols, CV_8U );
+  d_pixels = cv::Mat( d_image.rows, d_image.cols, CV_8U );
   int per_row = d_image.rows / d_size;
 
   for( int x=0; x<d_image.rows; x++ )
   {
     for( int y=0; y<d_image.cols; y++ )
     {
-      d_super_pixels.at<uchar>( x, y ) = ( y / d_size ) + ( per_row * ( x / d_size ) );
+      d_pixels.at<uchar>( x, y ) = ( y / d_size ) + ( per_row * ( x / d_size ) );
     }
   }
 }
@@ -116,19 +132,12 @@ int SLIC::boundsCheck( int bounds, int position )
 
 bool SLIC::boundary( int x, int y )
 {
-  int surrounding = ( d_super_pixels.at<uchar>( boundsCheck( d_image.rows, x+1 ), y )
-    + d_super_pixels.at<uchar>( boundsCheck( d_image.rows, x-1 ), y )
-    + d_super_pixels.at<uchar>( x, boundsCheck( d_image.cols, y-1 ) )
-    + d_super_pixels.at<uchar>( x, boundsCheck( d_image.cols, y+1 ) ) ) / 4;
+  int surrounding = ( d_pixels.at<uchar>( boundsCheck( d_image.rows, x+1 ), y )
+    + d_pixels.at<uchar>( boundsCheck( d_image.rows, x-1 ), y )
+    + d_pixels.at<uchar>( x, boundsCheck( d_image.cols, y-1 ) )
+    + d_pixels.at<uchar>( x, boundsCheck( d_image.cols, y+1 ) ) ) / 4;
 
-  return surrounding != d_super_pixels.at<uchar>( x, y )?true:false;
-}
-
-bool SLIC::converged()
-{
-  return std::equal( d_super_pixels.begin<uchar>(),
-                     d_super_pixels.end<uchar>(),
-                     d_old_super_pixels.begin<uchar>() );
+  return surrounding != d_pixels.at<uchar>( x, y );
 }
 
 void SLIC::getSmallestMagnitude( int x_start, int x_end, int y_start, int y_end )
@@ -136,11 +145,16 @@ void SLIC::getSmallestMagnitude( int x_start, int x_end, int y_start, int y_end 
 
 }
 
+int SLIC::mapCoordinates( int x, int y )
+{
+  return x >= y?x * x + x + y:x + y * y;
+}
+
 int SLIC::nearestCentroid( cv::Vec<int, 2> coordinates, cv::Vec3b pixel )
 {
   int nearest_centroid = -1;
   float nearest_distance = INFINITY;
-  for( int i=0; i<d_centroids.size(); i++ )
+  for( int i=0; i<d_num_clusters; i++ )
   {
     if( d_centroids[i].distance( coordinates ) >= 2*d_size )
     {
@@ -154,7 +168,6 @@ int SLIC::nearestCentroid( cv::Vec<int, 2> coordinates, cv::Vec3b pixel )
       nearest_distance = distance;
       nearest_centroid = i;
     }
-
   }
 
   return nearest_centroid;
@@ -175,6 +188,22 @@ void SLIC::setCentroids()
   }
 }
 
+void SLIC::setMap()
+{
+  for( int x=0; x<d_image.rows; x++ )
+  {
+    for( int y=0; y<d_image.cols; y++ )
+    {
+      int centroid = d_pixels.at<uchar>( x, y );
+      int key = mapCoordinates( x, y );
+      cv::Vec<int, 2> coord = cv::Vec<int, 2>( x, y );
+      cv::Vec3b pixel = d_image.at<cv::Vec3b>( x, y );
+      d_coords[centroid].insert( std::make_pair( key, coord ) );
+      d_rgb[centroid].insert( std::make_pair( key, pixel ) );
+    }
+  }
+}
+
 cv::Mat SLIC::slicImage()
 {
   cv::Mat image = cv::Mat( d_image.rows, d_image.cols, d_image.type() );
@@ -187,37 +216,14 @@ cv::Mat SLIC::slicImage()
     }
   }
 
-  for( int i=0; i<d_num_clusters; i++ )
-  {
-    cv::Vec<int, 2> coordinate = d_centroids[i].getCoordinates();
-    image.at<cv::Vec3b>( coordinate(0), coordinate(1) ) = 255-i;
-  }
-
   return image;
 }
 
-void SLIC::updateSuperPixels()
+void SLIC::updatePixels()
 {
-  std::vector<cv::Vec<int, 2>> coordinates;
-  std::vector<cv::Vec3b> rgb;
-
   for( int i=0; i<d_num_clusters; i++ )
   {
-    for( int x=0; x<d_image.rows; x++ )
-    {
-      for( int y=0; y<d_image.cols; y++ )
-      {
-        if( i == d_super_pixels.at<uchar>( x, y ) )
-        {
-          coordinates.push_back( cv::Vec<int, 2>( x, y ) );
-          rgb.push_back( d_image.at<cv::Vec3b>( x, y ) );
-        }
-      }
-    }
-
-    d_centroids[i].update( coordinates, rgb );
-    coordinates.clear();
-    rgb.clear();
+    d_centroids[i].update( d_coords[i], d_rgb[i] );
   }
 }
 

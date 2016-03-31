@@ -4,6 +4,7 @@
 
 #include "centroid.hpp"
 
+#include <map>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <stdlib.h>
@@ -25,27 +26,33 @@ namespace kmeans
       cv::Mat d_clustered;
         // Image with pixels placed in a cluster.
 
-      cv::Mat d_old_clustered;
-        // Old image with pixels placed in a cluster.
-
       int d_num_clusters;
         // Number of clusters to be chosen.
 
       std::vector<centroid::Centroid> d_centroids;
         // List of centroids.
 
-      // MEMBER FUNCTIONS
-      bool converged( cv::Mat clustered );
-        // Check if kmeans has converged.
+      std::vector<std::map<int, cv::Vec<int, 2>>> d_coords;
+        // Map of centroid pixel coordinates.
 
+      std::vector<std::map<int, cv::Vec3b>> d_rgb;
+        // Map of centroid pixel rgbs.
+
+      // MEMBER FUNCTIONS
       cv::Mat kmeansImage();
         // Returns image with clusters color by their centroid.
+
+      int mapCoordinates( int x, int y );
+        // Converts coordinates into a unique integer.
 
       int nearestCentroid( cv::Vec3b pixel );
         // Find the centroid the pixel belongs to.
 
       void setCentroids();
         // Builds the list of centroids.
+
+      void setMaps();
+        // Builds initial maps.
 
       void updateCentroids();
         // Update the centroids for each iteration of the loop.
@@ -72,6 +79,8 @@ namespace kmeans
       // FREE OPERATORS
       cv::Mat perform();
         // Perform kmeans algorithm upon image.
+
+      cv::Mat performMap();
 
   };
 

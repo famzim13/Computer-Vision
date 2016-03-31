@@ -32,15 +32,15 @@ void Filter::setSigma( float sigma )
 }
 
 // FREE OPERATORS
-cv::Mat Filter::gaussian( cv::Mat image, int space )
+cv::Mat Filter::gaussian( cv::Mat image )
 {
   cv::Mat blur = directionFilter( image, d_kernel, 0 );
-  return setSpace( directionFilter( blur, d_kernel, 1 ), space );
+  return directionFilter( blur, d_kernel, 1 );
 }
 
-cv::Mat Filter::filter( cv::Mat image, std::vector<float> kernel, int direction, int space )
+cv::Mat Filter::filter( cv::Mat image, std::vector<float> kernel, int direction )
 {
-  return setSpace( directionFilter( image, kernel, direction ), space );
+  return directionFilter( image, kernel, direction );
 }
 
 // MEMBER FUNCTIONS
@@ -76,7 +76,7 @@ void Filter::buildKernel( float sigma )
 
 cv::Mat Filter::directionFilter( cv::Mat image, std::vector<float> filter, int direction )
 {
-  cv::Mat filtered = cv::Mat( image.rows, image.cols, CV_8UC3 );
+  cv::Mat filtered = cv::Mat( image.rows, image.cols, CV_32FC3 );
   int kernel_half = floor( filter.size() / 2 );
   int x1, y1 = 0;
 
@@ -106,26 +106,6 @@ cv::Mat Filter::directionFilter( cv::Mat image, std::vector<float> filter, int d
   }
 
   return filtered;
-}
-
-cv::Mat Filter::setSpace( cv::Mat image, int space )
-{
-  if( space )
-  {
-    return image;
-  }
-
-  cv::Mat spaced = cv::Mat( image.rows, image.cols, CV_8U );
-
-  for( int x=0; x<image.rows; x++ )
-  {
-    for( int y=0; y<image.cols; y++ )
-    {
-      spaced.at<uchar>( x, y ) = image.at<cv::Vec3b>( x, y )(0);
-    }
-  }
-
-  return spaced;
 }
 
 } // end namespace filter.

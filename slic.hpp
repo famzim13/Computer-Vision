@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <map>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
@@ -26,11 +27,8 @@ class SLIC
     cv::Mat d_result;
       // Result of the last SLIC performance.
 
-    cv::Mat d_super_pixels;
+    cv::Mat d_pixels;
       // Image of super pixel assignments.
-
-    cv::Mat d_old_super_pixels;
-      // Image of previous super pixel assignments.
 
     int d_size;
       // Dimensional size of super pixel.
@@ -41,11 +39,17 @@ class SLIC
     std::vector<centroid::Centroid> d_centroids;
       // List of centroids for the super pixels.
 
+    std::vector<std::map<int, cv::Vec<int, 2>>> d_coords;
+      // Map of centroid pixel coordinates.
+
+    std::vector<std::map<int, cv::Vec3b>> d_rgb;
+      // Map of centroid pixel rgbs.
+
     filter::Filter d_filter;
       // Filter object for the SLIC.
 
     // MEMBER FUNCTIONS
-    void assignSuperPixels();
+    void assignPixels();
       // Assigns the super pixels.
 
     int boundsCheck( int bounds, int position );
@@ -54,11 +58,11 @@ class SLIC
     bool boundary( int x, int y );
       // Returns whether or not a pixel is a boundary.
 
-    bool converged();
-      // Checks if SLIC has converged.
-
     void getSmallestMagnitude( int x_start, int x_end, int y_start, int y_end );
       // Get the smallest 3x3 area in the superpixel.
+
+    int mapCoordinates( int x, int y );
+      // Converts pixel coordinates into a single integer.
 
     int nearestCentroid( cv::Vec<int, 2> coordinates, cv::Vec3b pixel );
       // Calculates nearest centroid for the pixel.
@@ -66,10 +70,13 @@ class SLIC
     void setCentroids();
       // Build the array of centroids.
 
+    void setMap();
+      // Builds the initial maps.
+
     cv::Mat slicImage();
       // Returns image that SLIC has computed.
 
-    void updateSuperPixels();
+    void updatePixels();
       // Updates super pixels for each iteration.
 
   public:

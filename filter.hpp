@@ -32,9 +32,6 @@ namespace filter
       cv::Mat directionFilter( cv::Mat image, std::vector<float> filter, int direction );
         // Filters the image with a one dimension filter in either x or y direction.
 
-      cv::Mat setSpace( cv::Mat image, int space );
-        // Converts between gray to rgb.
-
     public:
       // CONSTRUCTORS
       Filter();
@@ -51,10 +48,10 @@ namespace filter
         // Set the sigma value for the filter.
 
       // FREE OPERATORS
-      cv::Mat gaussian( cv::Mat image, int space );
+      cv::Mat gaussian( cv::Mat image );
         // Performs a Gaussian filter on the input image.
 
-      cv::Mat filter( cv::Mat image, std::vector<float> kernel, int direction, int space );
+      cv::Mat filter( cv::Mat image, std::vector<float> kernel, int direction );
         // Performs a filtering of the image with the given kernel.
 
   };
