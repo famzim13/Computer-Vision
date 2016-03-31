@@ -36,15 +36,12 @@ int main( int argc, char** argv )
     return -1;
   }
 
-
   scv::kmeans::KMeans clustered = scv::kmeans::KMeans( kmeans_image, num_clusters );
   std::string filename = std::to_string( num_clusters ).append( "_kmeans_" ).append( argv[2] );
 
   clock_t start = clock();
-  cv::imwrite( filename, clustered.perform() );
   clock_t end = clock();
   double speed = ( end - start ) / (double)CLOCKS_PER_SEC;
-  std::cout << "kmeans took " << speed << "s to complete\n";
 
   scv::slic::SLIC super_pixels = scv::slic::SLIC( slic_image, pixel_size );
   filename = std::to_string( pixel_size ).append( "_slic_" ).append( argv[4] );

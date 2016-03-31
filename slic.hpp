@@ -48,6 +48,12 @@ class SLIC
     filter::Filter d_filter;
       // Filter object for the SLIC.
 
+    cv::Mat d_sobel_x;
+      // Image with Sobel of X applied.
+
+    cv::Mat d_sobel_y;
+      // Image with Sobel of Y applied.
+
     // MEMBER FUNCTIONS
     void assignPixels();
       // Assigns the super pixels.
@@ -58,8 +64,11 @@ class SLIC
     bool boundary( int x, int y );
       // Returns whether or not a pixel is a boundary.
 
-    void getSmallestMagnitude( int x_start, int x_end, int y_start, int y_end );
-      // Get the smallest 3x3 area in the superpixel.
+    cv::Vec<int, 2> getSmallest( int x_start, int x_end, int y_start, int y_end );
+      // Get the smallest Sobel gradient.
+
+    void getSobels();
+      // Get sobel images.
 
     int mapCoordinates( int x, int y );
       // Converts pixel coordinates into a single integer.

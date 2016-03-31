@@ -10,7 +10,8 @@ namespace filter
 // CONSTRUCTORS
 Filter::Filter()
 {
-  Filter( 1.0 );
+  d_sigma = 1.0;
+  buildKernel( d_sigma );
 }
 
 Filter::Filter( float sigma )
@@ -46,7 +47,7 @@ cv::Mat Filter::filter( cv::Mat image, std::vector<float> kernel, int direction 
 // MEMBER FUNCTIONS
 int Filter::boundCheck( int bound, int position )
 {
-  return position < 0?0:position > bound?bound:position;
+  return position < 0?0:position >= bound?bound-1:position;
 }
 
 void Filter::buildKernel( float sigma )
@@ -78,30 +79,30 @@ cv::Mat Filter::directionFilter( cv::Mat image, std::vector<float> filter, int d
 {
   cv::Mat filtered = cv::Mat( image.rows, image.cols, CV_32FC3 );
   int kernel_half = floor( filter.size() / 2 );
-  int x1, y1 = 0;
+  int x1, y1;
 
   for( int x = 0; x < image.rows; x++ )
   {
     for( int y = 0; y < image.cols; y++ )
     {
-      float r_value, b_value, g_value = 0.0;
+      cv::Vec<float, 3> rgb( 0, 0, 0 );
       for( int i = -kernel_half; i <= kernel_half; i++ )
       {
         if( direction == 0 )
         {
-          x1 = boundCheck( image.rows, i+x );
+          x1 = boundCheck( image.rows, x+i );
           y1 = y;
         } else
         {
           x1 = x;
-          y1 = boundCheck( image.cols, i+y );
+          y1 = boundCheck( image.rows, y+i );
         }
+
         cv::Vec3b pixel = image.at<cv::Vec3b>( x1, y1 );
-        r_value += pixel(0) * filter[i+kernel_half];
-        g_value += pixel(1) * filter[i+kernel_half];
-        b_value += pixel(2) * filter[i+kernel_half];
+        rgb += pixel * filter[i+kernel_half];
       }
-      filtered.at<cv::Vec3b>( x, y ) = cv::Vec3b( r_value, g_value, b_value );
+
+      filtered.at<cv::Vec<float, 3>>( x, y ) = rgb;
     }
   }
 

@@ -127,7 +127,7 @@ void SLIC::assignPixels()
 
 int SLIC::boundsCheck( int bounds, int position )
 {
-  return position < 0?0:position > bounds?bounds:position;
+  return position < 0?0:position >= bounds?bounds-1:position;
 }
 
 bool SLIC::boundary( int x, int y )
@@ -140,9 +140,47 @@ bool SLIC::boundary( int x, int y )
   return surrounding != d_pixels.at<uchar>( x, y );
 }
 
-void SLIC::getSmallestMagnitude( int x_start, int x_end, int y_start, int y_end )
+cv::Vec<int, 2> SLIC::getSmallest( int x_start, int x_end, int y_start, int y_end )
 {
+  float smallest = INFINITY;
+  cv::Vec<int, 2> position;
 
+  for( int x=x_start; x<x_end; x++ )
+  {
+    for( int y=y_start; y<y_end; y++ )
+    {
+      cv::Vec<float, 3> pixel_x = d_sobel_x.at<cv::Vec<float, 3>>( x, y );
+      cv::Vec<float, 3> pixel_y = d_sobel_y.at<cv::Vec<float, 3>>( x, y );
+
+      float magnitude = sqrt( pow( pixel_x(0)+pixel_y(0), 2 )
+                            + pow( pixel_x(1)+pixel_y(1), 2 )
+                            + pow( pixel_x(2)+pixel_y(2), 2 ) );
+      if( magnitude < smallest )
+      {
+        smallest = magnitude;
+        position(0) = x;
+        position(1) = y;
+      }
+    }
+  }
+
+  return position;
+}
+
+void SLIC::getSobels()
+{
+  std::vector<float> sobel1( 3, 1.0 );
+  sobel1[1] = 2.0;
+  std::vector<float> sobel2( 3, 0.0 );
+  sobel2[0] = 1.0; sobel2[2] = -1.0;
+
+  cv::Mat gaussian = d_filter.gaussian( d_image );
+
+  d_sobel_x = d_filter.filter( gaussian, sobel1, 0 );
+  d_sobel_x = d_filter.filter( d_sobel_x, sobel2, 1 );
+
+  d_sobel_y = d_filter.filter( gaussian, sobel2, 0 );
+  d_sobel_y = d_filter.filter( d_sobel_y, sobel1, 1 );
 }
 
 int SLIC::mapCoordinates( int x, int y )
@@ -175,15 +213,20 @@ int SLIC::nearestCentroid( cv::Vec<int, 2> coordinates, cv::Vec3b pixel )
 
 void SLIC::setCentroids()
 {
+  cv::Vec<int, 2> position;
+  getSobels();
+
   for( int x=0; x<d_image.rows; x += d_size )
   {
     for( int y=0; y<d_image.cols; y += d_size )
     {
       int i = x + ( boundsCheck( d_image.rows, x+d_size ) - x ) / 2;
       int j = y + ( boundsCheck( d_image.cols, y+d_size ) - y ) / 2;
-      cv::Vec3b rgb = d_image.at<cv::Vec3b>( i, j );
 
-      d_centroids.push_back( centroid::Centroid( cv::Vec<int, 2>( i, j ), rgb ) );
+      position = getSmallest( i-1, i+2, j-1, j+2 );
+      cv::Vec3b rgb = d_image.at<cv::Vec3b>( position(0), position(1) );
+
+      d_centroids.push_back( centroid::Centroid( position, rgb ) );
     }
   }
 }

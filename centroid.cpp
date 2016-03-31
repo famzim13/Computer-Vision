@@ -50,8 +50,8 @@ float Centroid::distance( cv::Vec<int, 2> coordinates, cv::Vec3b rgb )
   return sqrt( pow( d_rgb(0) - rgb(0), 2 )
                 + pow( d_rgb(1) - rgb(1), 2 )
                 + pow( d_rgb(2) - rgb(2), 2 )
-                + pow( ( d_coordinates(0) - coordinates(0) )/2, 2 )
-                + pow( ( d_coordinates(1) - coordinates(1) )/2, 2 ));
+                + pow( ( d_coordinates(0) - coordinates(0) )*2, 2 )
+                + pow( ( d_coordinates(1) - coordinates(1) )*2, 2 ));
 }
 
 void Centroid::update( std::map<int, cv::Vec3b> rgb )
