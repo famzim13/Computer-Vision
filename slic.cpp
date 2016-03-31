@@ -12,6 +12,7 @@ SLIC::SLIC( cv::Mat image )
 {
   d_image = image;
   d_filter = filter::Filter();
+  d_dist_factor = 1.0;
   d_size = 50;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
@@ -22,6 +23,7 @@ SLIC::SLIC( cv::Mat image, float sigma )
 {
   d_image = image;
   d_filter = filter::Filter( sigma );
+  d_dist_factor = 1.0;
   d_size = 50;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
@@ -32,16 +34,18 @@ SLIC::SLIC( cv::Mat image, int size )
 {
   d_image = image;
   d_filter = filter::Filter();
+  d_dist_factor = 1.0;
   d_size = size;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
   d_rgb = std::vector<std::map<int, cv::Vec3b>>( d_num_clusters );
 }
 
-SLIC::SLIC( cv::Mat image, int size, float sigma )
+SLIC::SLIC( cv::Mat image, int size, float dist_factor )
 {
   d_image = image;
-  d_filter = filter::Filter( sigma );
+  d_filter = filter::Filter();
+  d_dist_factor = dist_factor;
   d_size = size;
   d_num_clusters = ceil( image.rows / d_size ) * ceil( image.cols / d_size );
   d_coords = std::vector<std::map<int, cv::Vec<int, 2>>>( d_num_clusters );
@@ -55,6 +59,11 @@ SLIC::~SLIC()
 }
 
 // MUTATORS
+void SLIC::setDistFactor( float dist_factor )
+{
+  d_dist_factor = dist_factor;
+}
+
 void SLIC::setImage( cv::Mat image )
 {
   d_image = image;
@@ -89,6 +98,7 @@ cv::Mat SLIC::perform()
       {
         nearest = nearestCentroid( cv::Vec<int, 2>( x, y ), d_image.at<cv::Vec3b>( x, y ) );
         old_nearest = d_pixels.at<ushort>( x, y );
+
         if( nearest != old_nearest )
         {
           converged = false;
@@ -137,7 +147,7 @@ bool SLIC::boundary( int x, int y )
     + d_pixels.at<ushort>( x, boundsCheck( d_image.cols, y-1 ) )
     + d_pixels.at<ushort>( x, boundsCheck( d_image.cols, y+1 ) ) ) / 4;
 
-  return surrounding != d_pixels.at<uchar>( x, y );
+  return surrounding != d_pixels.at<ushort>( x, y );
 }
 
 cv::Vec<int, 2> SLIC::getSmallest( int x_start, int x_end, int y_start, int y_end )
@@ -191,15 +201,18 @@ int SLIC::mapCoordinates( int x, int y )
 int SLIC::nearestCentroid( cv::Vec<int, 2> coordinates, cv::Vec3b pixel )
 {
   int nearest_centroid = -1;
+  int mod = 1.5 * d_size;
   float nearest_distance = INFINITY;
   for( int i=0; i<d_num_clusters; i++ )
   {
-    if( d_centroids[i].distance( coordinates ) >= 2*d_size )
+    cv::Vec<int, 2> coords = d_centroids[i].getCoordinates();
+    if( coords(0) - mod > coordinates(0) || coords(0) + mod < coordinates(0)
+     || coords(1) - mod > coordinates(1) || coords(1) + mod < coordinates(1) )
     {
       continue;
     }
 
-    float distance = d_centroids[i].distance( coordinates, pixel );
+    float distance = d_centroids[i].distance( coordinates, pixel, d_dist_factor );
 
     if( distance < nearest_distance )
     {
@@ -224,9 +237,9 @@ void SLIC::setCentroids()
       int j = y + ( boundsCheck( d_image.cols, y+d_size ) - y ) / 2;
 
       position = getSmallest( i-1, i+2, j-1, j+2 );
-      cv::Vec3b rgb = d_image.at<cv::Vec3b>( position(0), position(1) );
+      cv::Vec3b rgb = d_image.at<cv::Vec3b>( i, j );
 
-      d_centroids.push_back( centroid::Centroid( position, rgb ) );
+      d_centroids.push_back( centroid::Centroid( cv::Vec<int, 2>( i, j ), rgb ) );
     }
   }
 }

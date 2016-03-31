@@ -45,7 +45,7 @@ class Centroid
     float distance( cv::Vec3b rgb );
       // Calculates the color similarity between centroid and pixel.
 
-    float distance( cv::Vec<int, 2> coordinates, cv::Vec3b rgb );
+    float distance( cv::Vec<int, 2> coordinates, cv::Vec3b rgb, float range );
       // Calculates the magnitude of color and distance between centroid and pixel.
 
     void update( std::map<int, cv::Vec3b> rgb );

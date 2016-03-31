@@ -6,7 +6,6 @@
 #include "filter.hpp"
 
 #include <cmath>
-#include <iostream>
 #include <map>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -29,6 +28,8 @@ class SLIC
 
     cv::Mat d_pixels;
       // Image of super pixel assignments.
+
+    float d_dist_factor;
 
     int d_size;
       // Dimensional size of super pixel.
@@ -99,7 +100,7 @@ class SLIC
     SLIC( cv::Mat image, int size );
       // Constructor with image and super pixel size input.
 
-    SLIC( cv::Mat image, int size, float sigma );
+    SLIC( cv::Mat image, int size, float dist_factor );
       // Constructor with image, super pixel size, and sigma.
 
     // DESTRUCTORS
@@ -107,6 +108,9 @@ class SLIC
       // Default destructor.
 
     // MUTATORS
+    void setDistFactor( float dist_factor );
+      // Changes the distance factor for magnitude.
+
     void setImage( cv::Mat image );
       // Changes the image.
 
