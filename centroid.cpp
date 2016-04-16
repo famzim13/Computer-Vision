@@ -12,6 +12,8 @@ Centroid::Centroid( cv::Vec<int, 2> coordinates, cv::Vec3b rgb )
 {
   d_coordinates = coordinates;
   d_rgb = rgb;
+  d_pixel_coordinates = std::map<int, cv::Vec2i>();
+  d_pixel_rgb = std::map<int, cv::Vec3b>();
 }
 
 // DESTRUCTORS
@@ -21,7 +23,7 @@ Centroid::~Centroid()
 }
 
 // ACCESSORS
-cv::Vec<int, 2> Centroid::getCoordinates()
+cv::Vec2i Centroid::getCoordinates()
 {
   return d_coordinates;
 }
@@ -29,6 +31,27 @@ cv::Vec<int, 2> Centroid::getCoordinates()
 cv::Vec3b Centroid::getRGB()
 {
   return d_rgb;
+}
+
+// MUTATORS
+void Centroid::addCoordinate( int key, cv::Vec2i coordinate )
+{
+  d_pixel_coordinates.insert( std::pair<int, cv::Vec2i>( key, coordinate ) );
+}
+
+void Centroid::addRGB( int key, cv::Vec3b rgb )
+{
+  d_pixel_rgb.insert( std::pair<int, cv::Vec3b>( key, rgb ) );
+}
+
+void Centroid::removeCoordinate( int key )
+{
+  d_pixel_coordinates.erase( key );
+}
+
+void Centroid::removeRGB( int key )
+{
+  d_pixel_rgb.erase( key );
 }
 
 // FREE OPERATORS
@@ -53,29 +76,30 @@ float Centroid::distance( cv::Vec<int, 2> coordinates, cv::Vec3b rgb, float rang
              + pow( coord_dist, 2 ) * pow( range, 2 ) );
 }
 
-void Centroid::update( std::map<int, cv::Vec3b> rgb )
+void Centroid::update()
 {
-  cv::Vec<int, 3> _rgb;
-  std::map<int, cv::Vec3b>::const_iterator rgb_it = rgb.cbegin();
+  bool d_same = true;
+  cv::Vec3i rgb( 0, 0, 0 );
 
-  for( ; rgb_it != rgb.cend(); rgb_it++ )
+  for( auto rgb_it = d_pixel_rgb.cbegin(); rgb_it != d_pixel_rgb.cend(); rgb_it++ )
   {
-    _rgb(0) += (*rgb_it).second(0);
-    _rgb(1) += (*rgb_it).second(1);
-    _rgb(2) += (*rgb_it).second(2);
+    rgb(0) += (*rgb_it).second(0);
+    rgb(1) += (*rgb_it).second(1);
+    rgb(2) += (*rgb_it).second(2);
   }
 
-  d_rgb = _rgb / (int)rgb.size();
+  d_rgb = rgb / (int)d_pixel_rgb.size();
 }
 
 void Centroid::update( std::map<int, cv::Vec<int, 2>> coordinates, std::map<int, cv::Vec3b> rgb )
 {
-  cv::Vec<int, 2> _coordinates;
-  cv::Vec<int, 3> _rgb;
-  std::map<int, cv::Vec<int, 2>>::const_iterator coord_it = coordinates.cbegin();
-  std::map<int, cv::Vec3b>::const_iterator rgb_it = rgb.cbegin();
+  bool d_same = true;
+  cv::Vec2i _coordinates;
+  cv::Vec3i _rgb;
+  std::map<int, cv::Vec2i>::const_iterator coord_it = coordinates.cbegin();
 
-  for( auto rgb_it = rgb.cbegin(); rgb_it != rgb.cend(); rgb_it++ )
+  for( auto rgb_it = rgb.cbegin(), d_rgb_it = d_pixel_rgb.cbegin();
+            rgb_it != rgb.cend(), d_rgb_it != d_pixel_rgb.cend(); rgb_it++, d_rgb_it++ )
   {
     _rgb(0) += (*rgb_it).second(0);
     _rgb(1) += (*rgb_it).second(1);

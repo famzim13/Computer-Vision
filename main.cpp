@@ -39,13 +39,17 @@ int main( int argc, char** argv )
 
   scv::kmeans::KMeans clustered = scv::kmeans::KMeans( kmeans_image, num_clusters );
   std::string filename = std::to_string( num_clusters ).append( "_kmeans_" ).append( argv[2] );
+  clock_t start = clock();
   cv::imwrite( filename, clustered.perform() );
+  clock_t end = clock();
+  std::cout << "Kmeans took " << (end-start)/1000.0 << "ms to complete\n";
 
-
+  /*
   scv::slic::SLIC super_pixels = scv::slic::SLIC( slic_image, pixel_size, dist_factor );
   filename = std::to_string( pixel_size ).append( "_" );
   filename.append( argv[5] ).append( "_slic_" ).append( argv[4] );
   cv::imwrite( filename, super_pixels.perform() );
+  */
 
   return 0;
 }

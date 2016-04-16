@@ -32,7 +32,7 @@ namespace kmeans
       std::vector<centroid::Centroid> d_centroids;
         // List of centroids.
 
-      std::vector<std::map<int, cv::Vec<int, 2>>> d_coords;
+      std::vector<std::map<int, cv::Vec2i>> d_coords;
         // Map of centroid pixel coordinates.
 
       std::vector<std::map<int, cv::Vec3b>> d_rgb;
