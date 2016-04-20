@@ -33,8 +33,17 @@ class HistogramKNN
 
   public:
     // CONSTRUCTOR
-    HistogramKNN( int num_buckets, std::vector<std::string> training );
-      // Constructor taking in histogram bucket count and training images.
+    HistogramKNN();
+      // Default constructor.
+
+    HistogramKNN( int num_buckets );
+      // KNN histogram with a set number of buckets.
+
+    HistogramKNN( int knn );
+      // KNN histogram with the number of neighbors to check.
+
+    HistogramKNN( int num_buckets, int knn );
+      // KNN histogram with a number of buckets and how many neighbors to check.
 
     // DESTRUCTOR
     ~HistogramKNN();
