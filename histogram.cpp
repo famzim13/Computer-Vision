@@ -47,7 +47,7 @@ int Histogram::getPixelCount()
 }
 
 // MUTATORS
-void Histogram::insertPixel( cv::Vec3i pixel )
+void Histogram::insertPixel( cv::Vec3b pixel )
 {
   for( int i=0; i<d_space; i++ )
   {
@@ -61,7 +61,7 @@ float Histogram::getDistance( Histogram histogram )
   float distance = 0.0;
   for( int i=0; i<d_space; i++ )
   {
-    for( int j=0; j<d_histograms[i].length(); j++ )
+    for( int j=0; j<d_buckets; j++ )
     {
       float += sqrt( pow( histogram[i][j] - d_histograms[i][j], 2 ) );
     }

@@ -4,7 +4,6 @@
 
 #include "histogram.hpp"
 
-#include <cmath>
 #include <map>
 #include <string>
 #include <vector>
@@ -34,17 +33,17 @@ class HistogramGroup
       // Default destructor.
 
     // MUTATORS
-    addHistogram( histgram::Histogram histogram );
+    void addHistogram( histogram::Histogram hist );
       // Adds a histogram to the histogram group.
 
     // FREE OPERATORS
-    std::map<float, std::string> getDistances( histogram::Histogram histogram );
+    std::map<float, std::string> getDistances( histogram::Histogram hist );
       // Get the distance from the input against all histograms in the group.
 
 };
 
-}
+} // end namepsace histogram_group.
 
-}
+} // end namespace scv.
 
 #endif

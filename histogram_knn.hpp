@@ -20,30 +20,37 @@ namespace histogram_knn
 class HistogramKNN
 {
   private:
-    std::map<std::string, HistogramGroup> d_classes;
+    int d_buckets;
+      // Number of bucket in the histogram for each image.
+
+    std::map<std::string, histogram_group::HistogramGroup> d_groups;
       // A map of class name and its histogram group.
 
     int d_knn;
       // Number of nearest neighbors to classify with.
 
-    int d_num_buckets;
-      // Number of bucket in the histogram for each image.
+    int d_space;
+      // Color space of the KNN classifier.
 
     std::vector<std::string> d_training_images;
       // Vector of file locations for the training images.
+
+    // MEMBER FUNCTIONS
+    histogram::Histogram buildHistogram( cv::Mat image );
+      // Builds histograms from the training images.
+
+    std::string getGroup( std::string filename );
+      // Gets the classification group from the filename.
+
+    std::vector<cv::Mat> loadImages();
+      // Loads the image files.
 
   public:
     // CONSTRUCTOR
     HistogramKNN();
       // Default constructor.
 
-    HistogramKNN( int num_buckets );
-      // KNN histogram with a set number of buckets.
-
-    HistogramKNN( int knn );
-      // KNN histogram with the number of neighbors to check.
-
-    HistogramKNN( int num_buckets, int knn );
+    HistogramKNN( int buckets, int knn );
       // KNN histogram with a number of buckets and how many neighbors to check.
 
     // DESTRUCTOR
@@ -61,7 +68,7 @@ class HistogramKNN
     std::string classifyImage( std::string classify );
       // Classifies a single image.
 
-    std::vector<std::stirng> classifyImages( std::vector<std::string> classify );
+    std::vector<std::string> classifyImages( std::vector<std::string> classify );
       // Classifies a set of images to their nearest neighbors.
 
     void train(); // TODO MAKE INPUT A MAP FROM EXCEL

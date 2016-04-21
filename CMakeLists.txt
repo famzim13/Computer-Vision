@@ -23,9 +23,10 @@ find_package( OpenCV REQUIRED )
 # Add Executables
 add_executable( segmentation main.cpp
     centroid.cpp
-    filter.cpp
-    kmeans.cpp
-    slic.cpp )
+    histogram_group.cpp
+    histogram_knn.cpp
+    histogram.cpp
+    kmeans.cpp )
 
 # Link libraries
 target_link_libraries( segmentation ${OpenCV_LIBS} )

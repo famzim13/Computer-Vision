@@ -46,7 +46,7 @@ class Histogram
       // Gets the histograms of the image.
 
     // MUTATORS
-    void insertPixel( cv::Vec3i pixel );
+    void insertPixel( cv::Vec3b pixel );
       // Inserts a pixel into the histogram arrays.
 
     // FREE OPERATORS
