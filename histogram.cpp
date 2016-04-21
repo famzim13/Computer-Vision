@@ -47,7 +47,7 @@ int Histogram::getPixelCount()
 }
 
 // MUTATORS
-void insertPixel( cv::Vec3i pixel )
+void Histogram::insertPixel( cv::Vec3i pixel )
 {
   for( int i=0; i<d_space; i++ )
   {
@@ -55,8 +55,23 @@ void insertPixel( cv::Vec3i pixel )
   }
 }
 
+// FREE OPERATORS
+float Histogram::getDistance( Histogram histogram )
+{
+  float distance = 0.0;
+  for( int i=0; i<d_space; i++ )
+  {
+    for( int j=0; j<d_histograms[i].length(); j++ )
+    {
+      float += sqrt( pow( histogram[i][j] - d_histograms[i][j], 2 ) );
+    }
+  }
+
+  return distance;
+}
+
 // MEMBER FUNCTIONS
-void placePixel( int histogram, int pixel )
+void Histogram::placePixel( int histogram, int pixel )
 {
   int bucket = (d_buckets-1)*(pixel/255);
   d_histograms[i][bucket] += 1;

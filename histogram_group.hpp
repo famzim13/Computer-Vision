@@ -38,7 +38,7 @@ class HistogramGroup
       // Adds a histogram to the histogram group.
 
     // FREE OPERATORS
-    std::map<std::string, int> getDistances( histgram::Histogram histogram );
+    std::map<float, std::string> getDistances( histogram::Histogram histogram );
       // Get the distance from the input against all histograms in the group.
 
 };

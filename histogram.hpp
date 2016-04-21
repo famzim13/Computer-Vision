@@ -2,6 +2,7 @@
 #ifndef INCLUDED_HISTOGRAM
 #define INCLUDED_HISTOGRAM
 
+#include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
@@ -47,6 +48,11 @@ class Histogram
     // MUTATORS
     void insertPixel( cv::Vec3i pixel );
       // Inserts a pixel into the histogram arrays.
+
+    // FREE OPERATORS
+    float getDistance( Histogram histogram );
+      // Gets the distance between two histgrams.
+
 };
 
 } // end namespace histogram.

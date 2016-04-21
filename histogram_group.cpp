@@ -11,30 +11,27 @@ namespace histogram_group
 HistogramGroup::HistogramGroup( std::string group )
 {
   d_group = group;
-  d_histograms = std::vector<std::vector<int>>();
+  d_histograms = std::vector<histogram::Histogram>();
 }
 
 // DESTRUCTORS
 HistogramGroup::~HistogramGroup();
 
 // MUTATORS
-void HistogramGroup::addHistogram( std::vector<int> histogram )
+void HistogramGroup::addHistogram( histogram::Histogram histogram )
 {
   d_histograms.push_back( histogram );
 }
 
 // FREE OPERATORS
-std::vector<int> HistogramGroup::getDistances( std::vector<int> histogram )
+std::map<float, std::string> HistogramGroup::getDistances( histogram::Histogram histogram )
 {
-  std::vector<int> distances = std::vector<int>( d_histograms.length() );
+  std::map<float, std::string> distances;
   for( int i=0; i<d_histograms.length(); i++ )
   {
-    for( int j=0; j<d_histograms[i].length(); j++ )
-    {
-      distance[i] += sqrt( pow( d_histograms[i][j] - histogram[j], 2 ) );
-    }
+    distances[d_histograms.getDistance( Histogram )] = d_group;
   }
-  
+
   return distances;
 }
 
