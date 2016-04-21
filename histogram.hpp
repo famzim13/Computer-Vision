@@ -25,10 +25,6 @@ class Histogram
     int d_space;
       // Color space of the image.
 
-    // MEMBER FUNCTIONS
-    void placePixel( int histogram, int pixel );
-      // Determines which bucket a pixel goes into.
-
   public:
     // CONSTRUCTORS
     Histogram( int buckets, int space );

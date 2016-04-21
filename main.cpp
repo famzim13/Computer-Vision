@@ -3,7 +3,6 @@
 #include "histogram_knn.hpp"
 #include "kmeans.hpp"
 
-#include <boost/filesystem.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>

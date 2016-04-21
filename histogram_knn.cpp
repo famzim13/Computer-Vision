@@ -54,7 +54,7 @@ std::string HistogramKNN::classifyImage( std::string classify )
   for( auto it = d_groups.begin(); it != d_groups.end(); it++ )
   {
     distances = (it->second).getDistances( hist );
-    all_distances.insert( distances.begin(), distances.end() );
+
   }
 
   return all_distances.begin()->second;
@@ -62,7 +62,14 @@ std::string HistogramKNN::classifyImage( std::string classify )
 
 std::vector<std::string> HistogramKNN::classifyImages( std::vector<std::string> classify )
 {
+  std::vector<std::string> classification = std::vector<std::string>( classify.size() );
 
+  for( int i=0; i<classify.size(); i++ )
+  {
+    classification[i] = classifyImage( classify[i] );
+  }
+
+  return classification;
 }
 
 void HistogramKNN::train()
@@ -73,13 +80,17 @@ void HistogramKNN::train()
   for( int i=0; i<images.size(); i++ )
   {
     group = getGroup( d_training_images[i] );
-    if( ( auto it = d_groups.find( group ) ) != d_groups.end() )
+    auto it = d_groups.find( group );
+
+    if( it != d_groups.end() )
     {
-      d_groups[group].addHistogram( buildHistogram( cv::Mat ) );
+      (it->second).addHistogram( buildHistogram( images[i] ) );
     } else
     {
-      d_groups[group] = histogram_group::HistogramGroup( group );
-      d_groups[group].addHistogram( buildHistogram( cv::Mat ) );
+      auto hist_group = histogram_group::HistogramGroup( group );
+      hist_group.addHistogram( buildHistogram( images[i] ) );
+      auto pair = std::pair<std::string, histogram_group::HistogramGroup>( group, hist_group );
+      d_groups.insert( pair );
     }
   }
 
@@ -94,7 +105,7 @@ histogram::Histogram HistogramKNN::buildHistogram( cv::Mat image )
   {
     for( int y=0; y<image.cols; y++ )
     {
-      newHist.insertPixel( image.at<cv::Vec3b>( x, y ) );
+      hist.insertPixel( image.at<cv::Vec3b>( x, y ) );
     }
   }
 

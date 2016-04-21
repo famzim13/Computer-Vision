@@ -32,7 +32,7 @@ std::map<float, std::string> HistogramGroup::getDistances( histogram::Histogram 
   std::map<float, std::string> distances;
   for( int i=0; i<d_histograms.size(); i++ )
   {
-    distances[d_histograms[i].getDistance( hist )] = d_group;
+    distances.insert( std::pair<float, std::string>( d_histograms[i].getDistance( hist ), d_group ) );
   }
 
   return distances;

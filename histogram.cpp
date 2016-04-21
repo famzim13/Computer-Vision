@@ -51,7 +51,7 @@ void Histogram::insertPixel( cv::Vec3b pixel )
 {
   for( int i=0; i<d_space; i++ )
   {
-    placePixel( i, pixel[i] );
+    d_histograms[i][(d_buckets-1)*(pixel[i]/255)] += 1;
   }
 }
 
@@ -59,22 +59,17 @@ void Histogram::insertPixel( cv::Vec3b pixel )
 float Histogram::getDistance( Histogram histogram )
 {
   float distance = 0.0;
+  auto histograms = histogram.getHistograms();
+
   for( int i=0; i<d_space; i++ )
   {
     for( int j=0; j<d_buckets; j++ )
     {
-      float += sqrt( pow( histogram[i][j] - d_histograms[i][j], 2 ) );
+      distance += sqrt( pow( histograms[i][j] - d_histograms[i][j], 2 ) );
     }
   }
 
   return distance;
-}
-
-// MEMBER FUNCTIONS
-void Histogram::placePixel( int histogram, int pixel )
-{
-  int bucket = (d_buckets-1)*(pixel/255);
-  d_histograms[i][bucket] += 1;
 }
 
 } // end namespace histogram.
