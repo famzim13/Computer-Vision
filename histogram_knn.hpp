@@ -57,13 +57,13 @@ class HistogramKNN
       // Adds training images to the classifier.
 
     // FREE OPERATORS
-    std::String classifyImage( std::string classify );
+    std::string classifyImage( std::string classify );
       // Classifies a single image.
 
-    std::vector<std::Stirng> classifyImages( std::vector<std::string> classify );
+    std::vector<std::stirng> classifyImages( std::vector<std::string> classify );
       // Classifies a set of images to their nearest neighbors.
 
-    void train();
+    void train(); // TODO MAKE INPUT A MAP FROM EXCEL
       // Trains the classifier.
 
 };

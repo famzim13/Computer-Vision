@@ -49,18 +49,24 @@ HistogramKNN::addImages( std::vector<std::string> training )
   d_training_images.insert( d_training_images.end(), training.begin(), training.end() );
 }
 
+// FREE OPERATORS
+std::string HistogramKNN::classifyImage( std::string classify )
+{
+
+}
+
+std::vector<std::string> HistogramKNN::classifyImages( std::vector<std::string> classify )
+{
+
+}
+
+void HistogramKNN::train()
+{
+
+}
+
 // MEMBER FUNCTIONS
-HistogramKNN::classifyImage( std::string classify )
-{
-
-}
-
-HistogramKNN::classifyImages( std::vector<std::string> classify )
-{
-
-}
-
-HistogramKNN::train()
+void placeRGB( cv::Vec3i pixel )
 {
   
 }
