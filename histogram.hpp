@@ -2,6 +2,10 @@
 #ifndef INCLUDED_HISTOGRAM
 #define INCLUDED_HISTOGRAM
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <vector>
+
 namespace scv
 {
 
@@ -11,27 +15,38 @@ namespace histogram
 class Histogram
 {
   private:
-    std::vector<int> d_histogram_r;
-      // Histogram for the red pixel.
+    int d_buckets;
+      // Number of histogram buckets.
 
-    std::vector<int> d_histogram_g;
-      // Histogram for the green pixel.
+    std::vector<std::vector<int>> d_histograms;
+      // Histograms in a color space.
 
-    std::vector<int> d_histogram_b;
-      // Histogram for the blue pixel.
+    int d_space;
+      // Color space of the image.
+
+    // MEMBER FUNCTIONS
+    void placePixel( int histogram, int pixel );
+      // Determines which bucket a pixel goes into.
 
   public:
     // CONSTRUCTORS
-    Histogram( int buckets );
-      // Constructor with number of buckets input.
+    Histogram( int buckets, int space );
+      // Constructor with number of buckets input and color space.
 
     // DESTRUCTORS
     ~Histogram();
       // Default destructor.
 
+    // ACCESSORS
+    int getPixelCount();
+      // Gets the count of the number of pixels in the histogram.
+
+    std::vector<std::vector<int>> getHistograms();
+      // Gets the histograms of the image.
+
     // MUTATORS
     void insertPixel( cv::Vec3i pixel );
-
+      // Inserts a pixel into the histogram arrays.
 };
 
 } // end namespace histogram.

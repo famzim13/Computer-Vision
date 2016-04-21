@@ -2,6 +2,7 @@
 #ifndef INCLUDED_HISTOGRAM_KNN
 #define INCLUDED_HISTOGRAM_KNN
 
+#include "histogram.hpp"
 #include "histogram_group.hpp"
 
 #include <map>
