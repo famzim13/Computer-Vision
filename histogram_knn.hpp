@@ -32,15 +32,12 @@ class HistogramKNN
     int d_space;
       // Color space of the KNN classifier.
 
-    std::vector<std::string> d_training_images;
+    std::vector<std::pair<std::string, std::string>> d_training_images;
       // Vector of file locations for the training images.
 
     // MEMBER FUNCTIONS
     histogram::Histogram buildHistogram( cv::Mat image );
       // Builds histograms from the training images.
-
-    std::string getGroup( std::string filename );
-      // Gets the classification group from the filename.
 
     std::vector<cv::Mat> loadImages();
       // Loads the image files.
@@ -58,10 +55,10 @@ class HistogramKNN
       // Default destructor.
 
     // MUTATORS
-    void addImage( std::string training );
+    void addImage( std::pair<std::string, std::string> training );
       // Adds a training image to the classifier.
 
-    void addImages( std::vector<std::string> training );
+    void addImages( std::vector<std::pair<std::string, std::string>> training );
       // Adds training images to the classifier.
 
     // FREE OPERATORS
@@ -71,7 +68,7 @@ class HistogramKNN
     std::vector<std::string> classifyImages( std::vector<std::string> classify );
       // Classifies a set of images to their nearest neighbors.
 
-    void train(); // TODO MAKE INPUT A MAP FROM EXCEL
+    void train();
       // Trains the classifier.
 
 };

@@ -14,7 +14,7 @@ HistogramKNN::HistogramKNN()
   d_groups = std::map<std::string, histogram_group::HistogramGroup>();
   d_knn = 1;
   d_space = 3;
-  d_training_images = std::vector<std::string>();
+  d_training_images = std::vector<std::pair<std::string, std::string>>();
 }
 
 HistogramKNN::HistogramKNN( int buckets, int knn )
@@ -23,7 +23,7 @@ HistogramKNN::HistogramKNN( int buckets, int knn )
   d_groups = std::map<std::string, histogram_group::HistogramGroup>();
   d_knn = knn;
   d_space = 3;
-  d_training_images = std::vector<std::string>();
+  d_training_images = std::vector<std::pair<std::string, std::string>>();
 }
 
 // DESTRUCTOR
@@ -33,12 +33,12 @@ HistogramKNN::~HistogramKNN()
 }
 
 // MUTATORS
-void HistogramKNN::addImage( std::string training )
+void HistogramKNN::addImage( std::pair<std::string, std::string> training )
 {
   d_training_images.push_back( training );
 }
 
-void HistogramKNN::addImages( std::vector<std::string> training )
+void HistogramKNN::addImages( std::vector<std::pair<std::string, std::string>> training )
 {
   d_training_images.insert( d_training_images.end(), training.begin(), training.end() );
 }
@@ -79,7 +79,7 @@ void HistogramKNN::train()
 
   for( int i=0; i<images.size(); i++ )
   {
-    group = getGroup( d_training_images[i] );
+    group = d_training_images[i].second;
     auto it = d_groups.find( group );
 
     if( it != d_groups.end() )
@@ -112,18 +112,13 @@ histogram::Histogram HistogramKNN::buildHistogram( cv::Mat image )
   return hist;
 }
 
-std::string HistogramKNN::getGroup( std::string filename )
-{
-
-}
-
 std::vector<cv::Mat> HistogramKNN::loadImages()
 {
   std::vector<cv::Mat> images = std::vector<cv::Mat>();
 
   for( int i=0; i<d_training_images.size(); i++ )
   {
-    images.push_back( cv::imread( d_training_images[i] ) );
+    images.push_back( cv::imread( d_training_images[i].first ) );
   }
 
   return images;

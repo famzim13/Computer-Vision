@@ -14,5 +14,7 @@ int main( int argc, char** argv )
     std::cout << "Temp arguement error\n";
   }
 
+  // READ IN INPUT
+
   return 0;
 }
