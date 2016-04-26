@@ -12,12 +12,7 @@ Histogram::Histogram( int buckets, int space )
 {
   d_buckets = buckets;
   d_space = space;
-
-  d_histograms = std::vector<std::vector<int>>( space );
-  for( int i=0; i<space; i++ )
-  {
-    d_histograms[i] = std::vector<int>( buckets, 0 );
-  }
+  d_histograms = std::vector<std::vector<int>>( space, std::vector<int>( buckets, 0 ) );
 }
 
 // DESTRUCTORS
@@ -56,10 +51,10 @@ void Histogram::insertPixel( cv::Vec3b pixel )
 }
 
 // FREE OPERATORS
-float Histogram::getDistance( Histogram histogram )
+float Histogram::getDistance( Histogram hist )
 {
   float distance = 0.0;
-  auto histograms = histogram.getHistograms();
+  auto histograms = hist.getHistograms();
 
   for( int i=0; i<d_space; i++ )
   {

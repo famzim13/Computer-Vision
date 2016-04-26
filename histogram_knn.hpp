@@ -5,6 +5,7 @@
 #include "histogram.hpp"
 #include "histogram_group.hpp"
 
+#include <iostream>
 #include <map>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>

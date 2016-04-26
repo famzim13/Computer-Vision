@@ -1,0 +1,12 @@
+./ImClass/coast_train1.jpg coast
+./ImClass/coast_train2.jpg coast
+./ImClass/coast_train3.jpg coast
+./ImClass/coast_train4.jpg coast
+./ImClass/forest_train1.jpg forest
+./ImClass/forest_train2.jpg forest
+./ImClass/forest_train3.jpg forest
+./ImClass/forest_train4.jpg forest
+./ImClass/insidecity_train1.jpg insidecity
+./ImClass/insidecity_train2.jpg insidecity
+./ImClass/insidecity_train3.jpg insidecity
+./ImClass/insidecity_train4.jpg insidecity

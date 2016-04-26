@@ -1,0 +1,12 @@
+./ImClass/coast_test1.jpg coast
+./ImClass/coast_test2.jpg coast
+./ImClass/coast_test3.jpg coast
+./ImClass/coast_test4.jpg coast
+./ImClass/forest_test1.jpg forest
+./ImClass/forest_test2.jpg forest
+./ImClass/forest_test3.jpg forest
+./ImClass/forest_test4.jpg forest
+./ImClass/insidecity_test1.jpg insidecity
+./ImClass/insidecity_test2.jpg insidecity
+./ImClass/insidecity_test3.jpg insidecity
+./ImClass/insidecity_test4.jpg insidecity

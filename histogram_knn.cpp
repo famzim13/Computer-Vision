@@ -48,13 +48,13 @@ std::string HistogramKNN::classifyImage( std::string classify )
 {
   std::map<float, std::string> all_distances = std::map<float, std::string>();
   std::map<float, std::string> distances = std::map<float, std::string>();
-  cv::Mat image = cv::imread( classify );
+  cv::Mat image = cv::imread( classify, CV_LOAD_IMAGE_COLOR );
   histogram::Histogram hist = buildHistogram( image );
 
   for( auto it = d_groups.begin(); it != d_groups.end(); it++ )
   {
     distances = (it->second).getDistances( hist );
-
+    all_distances.insert( distances.begin(), distances.end() );
   }
 
   return all_distances.begin()->second;
@@ -81,14 +81,20 @@ void HistogramKNN::train()
   {
     group = d_training_images[i].second;
     auto it = d_groups.find( group );
+    auto hist = buildHistogram( images[i] );
+    if( ( images[i].rows * images[i].cols * 3 ) != hist.getPixelCount() )
+    {
+      std::cout << "Pixels in histogram does not match image\n";
+    }
+
 
     if( it != d_groups.end() )
     {
-      (it->second).addHistogram( buildHistogram( images[i] ) );
+      (it->second).addHistogram( hist );
     } else
     {
       auto hist_group = histogram_group::HistogramGroup( group );
-      hist_group.addHistogram( buildHistogram( images[i] ) );
+      hist_group.addHistogram( hist );
       auto pair = std::pair<std::string, histogram_group::HistogramGroup>( group, hist_group );
       d_groups.insert( pair );
     }
@@ -118,7 +124,7 @@ std::vector<cv::Mat> HistogramKNN::loadImages()
 
   for( int i=0; i<d_training_images.size(); i++ )
   {
-    images.push_back( cv::imread( d_training_images[i].first ) );
+    images.push_back( cv::imread( d_training_images[i].first, CV_LOAD_IMAGE_COLOR ) );
   }
 
   return images;
